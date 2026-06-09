@@ -1,0 +1,103 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+  scrape_timeout: 3s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Rule files
+rule_files:
+  - '/etc/prometheus/alert.rules.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 10s
+
+  # Aeron Media Driver (if HTTP monitoring is enabled)
+  - job_name: 'aeron'
+    static_configs:
+      - targets: ['aeron:8080']
+    scrape_interval: 10s
+    metrics_path: '/aeron/counters'
+
+  # NATS Server
+  - job_name: 'nats'
+    static_configs:
+      - targets: ['nats:8222']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # QuestDB
+  - job_name: 'questdb'
+    static_configs:
+      - targets: ['questdb:9003']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+
+  # Feed Handlers
+  - job_name: 'feed-handlers'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'crypto-feed-handler:8080'
+          - 'stock-feed-handler:8080'
+          - 'cfd-feed-handler:8080'
+    scrape_interval: 5s
+
+  # Trading Algorithms
+  - job_name: 'algorithms'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'sample-algorithm:8080'
+          - 'market-making-algo:8080'
+          - 'arbitrage-algo:8080'
+    scrape_interval: 5s
+
+  # Execution Services
+  - job_name: 'execution-services'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'execution-service:8080'
+    scrape_interval: 5s
+
+  # Risk Service
+  - job_name: 'risk-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'risk-service:8080'
+    scrape_interval: 5s
+
+  # Market Data Recorder
+  - job_name: 'market-data-recorder'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'market-data-recorder:8080'
+    scrape_interval: 5s
+
+  # Market Data Cache
+  - job_name: 'market-data-cache'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets:
+          - 'market-data-cache:8080'
+    scrape_interval: 5s
+
+# Remote write configuration (for production)
+# remote_write:
+#   - url: 'https://prometheus-prod:9090/api/v1/write'
+#     basic_auth:
+#       username: 'user'
+#       password: 'password'

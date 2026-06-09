@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd"
+    package="TradingPlatform.Sbe"
+    id="2"
+    version="1"
+    semanticVersion="1.0.0"
+    description="Order and Execution Messages for Trading Platform">
+
+    <sbe:types>
+        <!-- Data Types -->
+        <sbe:composite name="Timestamp" description="Timestamp with nanoseconds precision">
+            <sbe:type name="seconds" primitiveType="uint64" byteOrder="littleEndian" />
+            <sbe:type name="nanoseconds" primitiveType="uint32" byteOrder="littleEndian" />
+        </sbe:composite>
+
+        <sbe:enum name="OrderSide" description="Buy or Sell side">
+            <sbe:validValue name="BUY" value="1" />
+            <sbe:validValue name="SELL" value="2" />
+        </sbe:enum>
+
+        <sbe:enum name="OrderType" description="Type of order">
+            <sbe:validValue name="MARKET" value="1" />
+            <sbe:validValue name="LIMIT" value="2" />
+            <sbe:validValue name="STOP" value="3" />
+            <sbe:validValue name="STOP_LIMIT" value="4" />
+            <sbe:validValue name="TRAILING_STOP" value="5" />
+            <sbe:validValue name="OCO" value="6" />  <!-- One Cancels Other -->
+            <sbe:validValue name="FOK" value="7" />   <!-- Fill or Kill -->
+            <sbe:validValue name="IOC" value="8" />   <!-- Immediate or Cancel -->
+            <sbe:validValue name="POST_ONLY" value="9" />
+            <sbe:validValue name="HIDDEN" value="10" />
+            <sbe:validValue name="ICEBERG" value="11" />
+        </sbe:enum>
+
+        <sbe:enum name="TimeInForce" description="Order time in force">
+            <sbe:validValue name="GTC" value="1" />    <!-- Good Till Cancel -->
+            <sbe:validValue name="IOC" value="2" />    <!-- Immediate or Cancel -->
+            <sbe:validValue name="FOK" value="3" />    <!-- Fill or Kill -->
+            <sbe:validValue name="GTX" value="4" />    <!-- Good Till Crossing -->
+            <sbe:validValue name="GTD" value="5" />    <!-- Good Till Date -->
+            <sbe:validValue name="DAY" value="6" />    <!-- Day Order -->
+            <sbe:validValue name="AT_THE_OPEN" value="7" />
+            <sbe:validValue name="AT_THE_CLOSE" value="8" />
+        </sbe:enum>
+
+        <sbe:enum name="OrderStatus" description="Current status of order">
+            <sbe:validValue name="PENDING" value="1" />
+            <sbe:validValue name="OPEN" value="2" />
+            <sbe:validValue name="PARTIALLY_FILLED" value="3" />
+            <sbe:validValue name="FILLED" value="4" />
+            <sbe:validValue name="CANCELED" value="5" />
+            <sbe:validValue name="REJECTED" value="6" />
+            <sbe:validValue name="EXPIRED" value="7" />
+            <sbe:validValue name="PENDING_CANCEL" value="8" />
+        </sbe:enum>
+
+        <sbe:enum name="ExecutionType" description="Type of execution event">
+            <sbe:validValue name="NEW" value="0" />
+            <sbe:validValue name="PARTIAL_FILL" value="1" />
+            <sbe:validValue name="FILL" value="2" />
+            <sbe:validValue name="DONE_FOR_DAY" value="3" />
+            <sbe:validValue name="CANCELED" value="4" />
+            <sbe:validValue name="REPLACED" value="5" />
+            <sbe:validValue name="PENDING_CANCEL" value="6" />
+            <sbe:validValue name="STOPPED" value="7" />
+            <sbe:validValue name="REJECTED" value="8" />
+            <sbe:validValue name="SUSPENDED" value="9" />
+            <sbe:validValue name="PENDING_NEW" value="10" />
+            <sbe:validValue name="CALCULATED" value="11" />
+            <sbe:validValue name="EXPIRED" value="12" />
+            <sbe:validValue name="RESTATED" value="13" />
+            <sbe:validValue name="PENDING_REPLACE" value="14" />
+        </sbe:enum>
+
+        <sbe:enum name="RejectReason" description="Reason for order rejection">
+            <sbe:validValue name="UNKNOWN" value="0" />
+            <sbe:validValue name="INVALID_SYMBOL" value="1" />
+            <sbe:validValue name="INVALID_PRICE" value="2" />
+            <sbe:validValue name="INVALID_QUANTITY" value="3" />
+            <sbe:validValue name="INVALID_ORDER_TYPE" value="4" />
+            <sbe:validValue name="INSUFFICIENT_FUNDS" value="5" />
+            <sbe:validValue name="EXCHANGE_CLOSED" value="6" />
+            <sbe:validValue name="ORDER_TOO_LARGE" value="7" />
+            <sbe:validValue name="PRICE_OUT_OF_RANGE" value="8" />
+            <sbe:validValue name="RATE_LIMIT_EXCEEDED" value="9" />
+            <sbe:validValue name="DUPLICATE_ORDER" value="10" />
+            <sbe:validValue name="INVALID_TIME_IN_FORCE" value="11" />
+            <sbe:validValue name="UNSUPPORTED_ORDER_TYPE" value="12" />
+            <sbe:validValue name="ACCOUNT_SUSPENDED" value="13" />
+            <sbe:validValue name="RISK_LIMIT_EXCEEDED" value="14" />
+        </sbe:enum>
+
+        <sbe:enum name="CancelReason" description="Reason for order cancellation">
+            <sbe:validValue name="USER_REQUEST" value="1" />
+            <sbe:validValue name="TIMEOUT" value="2" />
+            <sbe:validValue name="MARKET_CLOSE" value="3" />
+            <sbe:validValue name="RISK_VIOLATION" value="4" />
+            <sbe:validValue name="SYSTEM_ERROR" value="5" />
+            <sbe:validValue name="ALGORITHM_STOP" value="6" />
+            <sbe:validValue name="MANUAL_OVERRIDE" value="7" />
+        </sbe:enum>
+    </sbe:types>
+
+    <sbe:messages>
+        <!-- Order Command -->
+        <sbe:message name="OrderCommand" id="100" description="Command to submit a new order">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Unique order ID" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client-generated order ID" />
+            <sbe:field name="algorithmId" type="char" length="36" id="3" description="ID of the algorithm placing the order" />
+            <sbe:field name="symbol" type="char" length="20" id="4" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="5" description="Target exchange" />
+            <sbe:field name="side" type="OrderSide" id="6" description="Buy or Sell" />
+            <sbe:field name="orderType" type="OrderType" id="7" description="Type of order" />
+            <sbe:field name="timeInForce" type="TimeInForce" id="8" description="Time in force" />
+            <sbe:field name="price" type="double" id="9" description="Limit price (for limit orders)" />
+            <sbe:field name="quantity" type="double" id="10" description="Order quantity" />
+            <sbe:field name="stopPrice" type="double" id="11" description="Stop price (for stop orders)" />
+            <sbe:field name="timestamp" type="Timestamp" id="12" description="Order submission timestamp" />
+            <sbe:field name="expireTime" type="uint64" id="13" description="Expiration timestamp (for GTD orders)" />
+            <sbe:field name="postOnly" type="uint8" id="14" description="Post-only flag (1 = true, 0 = false)" />
+            <sbe:field name="hidden" type="uint8" id="15" description="Hidden order flag" />
+            <sbe:field name="icebergPeak" type="double" id="16" description="Iceberg peak size" />
+        </sbe:message>
+
+        <!-- Order Cancel Command -->
+        <sbe:message name="OrderCancelCommand" id="101" description="Command to cancel an order">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Order ID to cancel" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client order ID to cancel" />
+            <sbe:field name="algorithmId" type="char" length="36" id="3" description="ID of the algorithm requesting cancellation" />
+            <sbe:field name="symbol" type="char" length="20" id="4" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="5" description="Exchange" />
+            <sbe:field name="timestamp" type="Timestamp" id="6" description="Cancellation request timestamp" />
+            <sbe:field name="cancelQuantity" type="double" id="7" description="Quantity to cancel (0 = full cancellation)" />
+        </sbe:message>
+
+        <!-- Order Modify Command -->
+        <sbe:message name="OrderModifyCommand" id="102" description="Command to modify an order">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Order ID to modify" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client order ID to modify" />
+            <sbe:field name="algorithmId" type="char" length="36" id="3" description="ID of the algorithm requesting modification" />
+            <sbe:field name="symbol" type="char" length="20" id="4" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="5" description="Exchange" />
+            <sbe:field name="newPrice" type="double" id="6" description="New price" />
+            <sbe:field name="newQuantity" type="double" id="7" description="New quantity" />
+            <sbe:field name="timestamp" type="Timestamp" id="8" description="Modification request timestamp" />
+        </sbe:message>
+
+        <!-- Order Acknowledgement -->
+        <sbe:message name="OrderAck" id="200" description="Acknowledgement of order submission">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Order ID" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client order ID" />
+            <sbe:field name="exchangeOrderId" type="char" length="64" id="3" description="Exchange-assigned order ID" />
+            <sbe:field name="symbol" type="char" length="20" id="4" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="5" description="Exchange" />
+            <sbe:field name="side" type="OrderSide" id="6" description="Buy or Sell" />
+            <sbe:field name="orderType" type="OrderType" id="7" description="Type of order" />
+            <sbe:field name="price" type="double" id="8" description="Order price" />
+            <sbe:field name="quantity" type="double" id="9" description="Order quantity" />
+            <sbe:field name="timestamp" type="Timestamp" id="10" description="Acknowledgement timestamp" />
+            <sbe:field name="status" type="OrderStatus" id="11" description="Initial order status" />
+            <sbe:field name="rejectReason" type="RejectReason" id="12" description="Reason if rejected" />
+            <sbe:field name="rejectMessage" type="char" length="256" id="13" description="Rejection message" />
+        </sbe:message>
+
+        <!-- Execution Event -->
+        <sbe:message name="ExecutionEvent" id="201" description="Order execution event">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Order ID" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client order ID" />
+            <sbe:field name="exchangeOrderId" type="char" length="64" id="3" description="Exchange order ID" />
+            <sbe:field name="executionId" type="char" length="36" id="4" description="Unique execution ID" />
+            <sbe:field name="symbol" type="char" length="20" id="5" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="6" description="Exchange" />
+            <sbe:field name="side" type="OrderSide" id="7" description="Buy or Sell" />
+            <sbe:field name="executionType" type="ExecutionType" id="8" description="Type of execution" />
+            <sbe:field name="filledQuantity" type="double" id="9" description="Quantity filled in this execution" />
+            <sbe:field name="filledPrice" type="double" id="10" description="Price of this execution" />
+            <sbe:field name="remainingQuantity" type="double" id="11" description="Remaining quantity after this execution" />
+            <sbe:field name="cumulativeQuantity" type="double" id="12" description="Total quantity filled so far" />
+            <sbe:field name="averagePrice" type="double" id="13" description="Average fill price so far" />
+            <sbe:field name="timestamp" type="Timestamp" id="14" description="Execution timestamp" />
+            <sbe:field name="fee" type="double" id="15" description="Fee for this execution" />
+            <sbe:field name="feeCurrency" type="char" length="8" id="16" description="Fee currency" />
+            <sbe:field name="liquidityFlag" type="uint8" id="17" description="1 = liquidity taker, 0 = liquidity maker" />
+        </sbe:message>
+
+        <!-- Order Status Update -->
+        <sbe:message name="OrderStatusUpdate" id="202" description="Order status update">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Order ID" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client order ID" />
+            <sbe:field name="exchangeOrderId" type="char" length="64" id="3" description="Exchange order ID" />
+            <sbe:field name="symbol" type="char" length="20" id="4" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="5" description="Exchange" />
+            <sbe:field name="previousStatus" type="OrderStatus" id="6" description="Previous status" />
+            <sbe:field name="newStatus" type="OrderStatus" id="7" description="New status" />
+            <sbe:field name="timestamp" type="Timestamp" id="8" description="Status update timestamp" />
+            <sbe:field name="cancelReason" type="CancelReason" id="9" description="Reason if canceled" />
+            <sbe:field name="rejectReason" type="RejectReason" id="10" description="Reason if rejected" />
+            <sbe:field name="message" type="char" length="256" id="11" description="Status message" />
+        </sbe:message>
+
+        <!-- Cancel Reject -->
+        <sbe:message name="CancelReject" id="203" description="Cancellation rejection">
+            <sbe:field name="orderId" type="char" length="36" id="1" description="Order ID" />
+            <sbe:field name="clientOrderId" type="char" length="36" id="2" description="Client order ID" />
+            <sbe:field name="exchangeOrderId" type="char" length="64" id="3" description="Exchange order ID" />
+            <sbe:field name="symbol" type="char" length="20" id="4" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="5" description="Exchange" />
+            <sbe:field name="timestamp" type="Timestamp" id="6" description="Rejection timestamp" />
+            <sbe:field name="rejectReason" type="char" length="64" id="7" description="Reason for rejection" />
+            <sbe:field name="rejectCode" type="uint32" id="8" description="Rejection code" />
+        </sbe:message>
+
+        <!-- Order Mass Cancel Request -->
+        <sbe:message name="OrderMassCancelRequest" id="103" description="Request to cancel multiple orders">
+            <sbe:field name="algorithmId" type="char" length="36" id="1" description="ID of the algorithm requesting cancellation" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol (empty for all symbols)" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange (empty for all exchanges)" />
+            <sbe:field name="side" type="OrderSide" id="4" description="Side (0 for both)" />
+            <sbe:field name="timestamp" type="Timestamp" id="5" description="Request timestamp" />
+        </sbe:message>
+
+        <!-- Order Mass Cancel Report -->
+        <sbe:message name="OrderMassCancelReport" id="204" description="Report of mass cancellation results">
+            <sbe:field name="requestId" type="char" length="36" id="1" description="Request ID" />
+            <sbe:field name="algorithmId" type="char" length="36" id="2" description="Algorithm ID" />
+            <sbe:field name="totalOrders" type="uint32" id="3" description="Total orders to cancel" />
+            <sbe:field name="successCount" type="uint32" id="4" description="Successfully canceled orders" />
+            <sbe:field name="failureCount" type="uint32" id="5" description="Failed cancellations" />
+            <sbe:field name="timestamp" type="Timestamp" id="6" description="Report timestamp" />
+            <!-- Individual results would follow -->
+        </sbe:message>
+    </sbe:messages>
+</sbe:messageSchema>

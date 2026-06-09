@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS8618</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>RELEASE</DefineConstants>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Aeron.NET -->
+    <PackageReference Include="Aeron.NET" Version="1.40.0" />
+    
+    <!-- SBE -->
+    <PackageReference Include="SimpleBinaryEncoding" Version="1.25.0" />
+    
+    <!-- NATS -->
+    <PackageReference Include="NATS.Net" Version="2.10.0" />
+    
+    <!-- QuestDB -->
+    <PackageReference Include="QuestDB.Net" Version="1.0.0" />
+    
+    <!-- Prometheus -->
+    <PackageReference Include="prometheus-net" Version="6.0.0" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="6.0.0" />
+    
+    <!-- Logging -->
+    <PackageReference Include="Serilog" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    
+    <!-- Configuration -->
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
+    
+    <!-- Dependency Injection -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    
+    <!-- HTTP -->
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="8.0.0" />
+    
+    <!-- Testing -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" PrivateAssets="all" />
+    <PackageReference Include="Moq" Version="4.20.69" PrivateAssets="all" />
+    <PackageReference Include="xunit" Version="2.4.2" PrivateAssets="all" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" PrivateAssets="all" />
+    
+    <!-- Resilience -->
+    <PackageReference Include="Polly" Version="7.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Aeron\" />
+    <Folder Include="Sbe\Generated\" />
+    <Folder Include="Metrics\" />
+    <Folder Include="Logging\" />
+    <Folder Include="Models\" />
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+
+</Project>

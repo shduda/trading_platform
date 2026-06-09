@@ -1,0 +1,84 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingPlatform.Common", "src\Common\TradingPlatform.Common\TradingPlatform.Common.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7556}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7557}") = "TradingPlatform.FeedHandlers.Crypto", "src\FeedHandlers\Crypto\TradingPlatform.FeedHandlers.Crypto.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7557}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7558}") = "TradingPlatform.Algorithms", "src\Algorithms\TradingPlatform.Algorithms.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7558}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7559}") = "TradingPlatform.Execution", "src\Execution\TradingPlatform.Execution.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7559}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7560}") = "TradingPlatform.Risk", "src\Risk\TradingPlatform.Risk.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7560}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7561}") = "TradingPlatform.MarketData", "src\MarketData\TradingPlatform.MarketData.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7561}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7562}") = "Common.Tests", "tests\Unit\Common\Common.Tests.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7562}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7563}") = "FeedHandlers.Tests", "tests\Unit\FeedHandlers\FeedHandlers.Tests.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7563}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7564}") = "Algorithms.Tests", "tests\Unit\Algorithms\Algorithms.Tests.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7564}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7565}") = "Execution.Tests", "tests\Unit\Execution\Execution.Tests.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7565}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7566}") = "Integration.Tests", "tests\Integration\Integration.Tests.csproj", "{9A19103F-16F7-4668-BE54-9A1E7A4F7566}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AnyCPU = Debug|AnyCPU
+		Release|AnyCPU = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7556}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7556}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7556}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7556}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7557}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7557}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7557}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7557}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7558}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7558}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7558}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7558}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7559}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7559}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7559}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7559}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7560}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7560}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7560}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7560}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7561}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7561}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7561}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7561}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7562}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7562}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7562}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7562}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7563}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7563}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7563}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7563}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7564}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7564}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7564}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7564}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7565}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7565}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7565}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7565}.Release|AnyCPU.Build.0 = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7566}.Debug|AnyCPU.ActiveCfg = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7566}.Debug|AnyCPU.Build.0 = Debug|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7566}.Release|AnyCPU.ActiveCfg = Release|AnyCPU
+		{9A19103F-16F7-4668-BE54-9A1E7A4F7566}.Release|AnyCPU.Build.0 = Release|AnyCPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A19103F-16F7-4668-BE54-9A1E7A4F7567}
+	EndGlobalSection
+EndGlobal

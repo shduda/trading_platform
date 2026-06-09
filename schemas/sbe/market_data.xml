@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd"
+    package="TradingPlatform.Sbe"
+    id="1"
+    version="1"
+    semanticVersion="1.0.0"
+    description="Market Data Messages for Trading Platform">
+
+    <sbe:types>
+        <!-- Data Types -->
+        <sbe:composite name="Timestamp" description="Timestamp with nanoseconds precision">
+            <sbe:type name="seconds" primitiveType="uint64" byteOrder="littleEndian" />
+            <sbe:type name="nanoseconds" primitiveType="uint32" byteOrder="littleEndian" />
+        </sbe:composite>
+
+        <sbe:enum name="DataType" description="Type of market data">
+            <sbe:validValue name="L1_TICKER" value="1" />
+            <sbe:validValue name="L2_ORDER_BOOK" value="2" />
+            <sbe:validValue name="TRADE" value="3" />
+            <sbe:validValue name="CANDLE" value="4" />
+        </sbe:enum>
+
+        <sbe:enum name="Side" description="Buy or Sell side">
+            <sbe:validValue name="BUY" value="1" />
+            <sbe:validValue name="SELL" value="2" />
+        </sbe:enum>
+
+        <sbe:enum name="OrderBookOperation" description="Order book update operation">
+            <sbe:validValue name="ADD" value="1" />
+            <sbe:validValue name="UPDATE" value="2" />
+            <sbe:validValue name="DELETE" value="3" />
+            <sbe:validValue name="SNAPSHOT" value="4" />
+        </sbe:enum>
+
+        <sbe:enum name="CandleTimeFrame" description="Candle time frame">
+            <sbe:validValue name="TICK" value="0" />
+            <sbe:validValue name="SECOND_1" value="1" />
+            <sbe:validValue name="SECOND_5" value="5" />
+            <sbe:validValue name="SECOND_15" value="15" />
+            <sbe:validValue name="SECOND_30" value="30" />
+            <sbe:validValue name="MINUTE_1" value="60" />
+            <sbe:validValue name="MINUTE_5" value="300" />
+            <sbe:validValue name="MINUTE_15" value="900" />
+            <sbe:validValue name="MINUTE_30" value="1800" />
+            <sbe:validValue name="HOUR_1" value="3600" />
+            <sbe:validValue name="HOUR_4" value="14400" />
+            <sbe:validValue name="DAY_1" value="86400" />
+        </sbe:enum>
+    </sbe:types>
+
+    <sbe:messages>
+        <!-- Market Data Update (L1 Ticker) -->
+        <sbe:message name="MarketDataUpdate" id="1" description="Level 1 Market Data Update">
+            <sbe:field name="timestamp" type="Timestamp" id="1" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange name" />
+            <sbe:field name="dataType" type="DataType" id="4" description="Type of market data" />
+            
+            <!-- L1 Fields -->
+            <sbe:field name="bidPrice" type="double" id="10" description="Best bid price" />
+            <sbe:field name="bidSize" type="double" id="11" description="Best bid size" />
+            <sbe:field name="askPrice" type="double" id="12" description="Best ask price" />
+            <sbe:field name="askSize" type="double" id="13" description="Best ask size" />
+            <sbe:field name="lastPrice" type="double" id="14" description="Last traded price" />
+            <sbe:field name="lastSize" type="double" id="15" description="Last traded size" />
+            <sbe:field name="volume" type="double" id="16" description="24h volume" />
+            <sbe:field name="vwap" type="double" id="17" description="Volume weighted average price" />
+            <sbe:field name="highPrice" type="double" id="18" description="24h high price" />
+            <sbe:field name="lowPrice" type="double" id="19" description="24h low price" />
+            <sbe:field name="openPrice" type="double" id="20" description="Open price" />
+            <sbe:field name="closePrice" type="double" id="21" description="Close price" />
+        </sbe:message>
+
+        <!-- Order Book Update (L2) -->
+        <sbe:message name="OrderBookUpdate" id="2" description="Level 2 Order Book Update">
+            <sbe:field name="timestamp" type="Timestamp" id="1" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange name" />
+            <sbe:field name="side" type="Side" id="4" description="Bid or Ask side" />
+            <sbe:field name="operation" type="OrderBookOperation" id="5" description="Update operation" />
+            <sbe:field name="price" type="double" id="6" description="Price level" />
+            <sbe:field name="size" type="double" id="7" description="Size at price level" />
+            <sbe:field name="orderId" type="uint64" id="8" description="Order ID (if available)" />
+            <sbe:field name="level" type="uint32" id="9" description="Price level index" />
+        </sbe:message>
+
+        <!-- Trade -->
+        <sbe:message name="Trade" id="3" description="Trade Execution">
+            <sbe:field name="timestamp" type="Timestamp" id="1" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange name" />
+            <sbe:field name="tradeId" type="char" length="36" id="4" description="Trade ID" />
+            <sbe:field name="side" type="Side" id="5" description="Buy or Sell" />
+            <sbe:field name="price" type="double" id="6" description="Trade price" />
+            <sbe:field name="size" type="double" id="7" description="Trade size" />
+            <sbe:field name="aggressorSide" type="Side" id="8" description="Side that initiated the trade" />
+        </sbe:message>
+
+        <!-- Candle -->
+        <sbe:message name="Candle" id="4" description="OHLCV Candle">
+            <sbe:field name="timestamp" type="Timestamp" id="1" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange name" />
+            <sbe:field name="timeFrame" type="CandleTimeFrame" id="4" description="Candle time frame" />
+            <sbe:field name="open" type="double" id="5" description="Open price" />
+            <sbe:field name="high" type="double" id="6" description="High price" />
+            <sbe:field name="low" type="double" id="7" description="Low price" />
+            <sbe:field name="close" type="double" id="8" description="Close price" />
+            <sbe:field name="volume" type="double" id="9" description="Volume" />
+            <sbe:field name="vwap" type="double" id="10" description="Volume weighted average price" />
+            <sbe:field name="isComplete" type="uint8" id="11" description="Whether candle is complete" />
+        </sbe:message>
+
+        <!-- Order Book Snapshot Request -->
+        <sbe:message name="OrderBookSnapshotRequest" id="5" description="Request for order book snapshot">
+            <sbe:field name="requestId" type="uint64" id="1" description="Request ID" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange name" />
+            <sbe:field name="depth" type="uint32" id="4" description="Depth of snapshot (number of levels)" />
+        </sbe:message>
+
+        <!-- Order Book Snapshot Response -->
+        <sbe:message name="OrderBookSnapshotResponse" id="6" description="Order book snapshot response">
+            <sbe:field name="requestId" type="uint64" id="1" description="Request ID" />
+            <sbe:field name="symbol" type="char" length="20" id="2" description="Trading symbol" />
+            <sbe:field name="exchange" type="char" length="10" id="3" description="Exchange name" />
+            <sbe:field name="timestamp" type="Timestamp" id="4" />
+            <sbe:field name="bidCount" type="uint32" id="5" description="Number of bid levels" />
+            <sbe:field name="askCount" type="uint32" id="6" description="Number of ask levels" />
+            <!-- Bid levels would follow as repeating group -->
+            <!-- Ask levels would follow as repeating group -->
+        </sbe:message>
+    </sbe:messages>
+</sbe:messageSchema>

@@ -1,0 +1,201 @@
+version: '3.8'
+
+# Trading Platform - Local Development Environment
+# 
+# This docker-compose file sets up all the infrastructure dependencies
+# needed for local development of the trading platform.
+# 
+# Services included:
+# - Aeron Media Driver (UDP messaging)
+# - QuestDB (time-series database)
+# - NATS Server with JetStream (event streaming)
+# - Prometheus (metrics collection)
+# - Grafana (visualization and dashboards)
+#
+# Usage:
+#   docker-compose up -d          # Start all services
+#   docker-compose down            # Stop all services
+#   docker-compose logs -f <svc>  # View logs for a service
+#   docker-compose ps             # List running services
+
+services:
+  # Aeron Media Driver
+  # Low-latency UDP messaging for market data and orders
+  aeron:
+    image: adaptiveresearch/aeron:latest
+    container_name: aeron
+    ports:
+      - "40123:40123/udp"    # Default Aeron UDP port
+      - "8080:8080"          # HTTP monitoring (if enabled)
+    command: ["-dir", "/aeron"]
+    volumes:
+      - aeron-data:/aeron
+    environment:
+      - AERON_DIR=/aeron
+    networks:
+      - trading-net
+    restart: unless-stopped
+
+  # QuestDB
+  # Time-series database for storing market data
+  questdb:
+    image: questdb/questdb:latest
+    container_name: questdb
+    ports:
+      - "9000:9000"    # HTTP REST API and Console
+      - "9009:9009"    # InfluxDB line protocol
+      - "8812:8812"    # PostgreSQL wire protocol
+      - "9003:9003"    # Metrics endpoint
+    volumes:
+      - questdb-data:/var/lib/questdb
+    environment:
+      - QDB_JAVA_OPTS=-Xms1g -Xmx4g
+      - QDB_MP_ENABLED=true
+    networks:
+      - trading-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/exec?query=SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NATS Server with JetStream
+  # Event streaming and pub/sub for risk events and monitoring
+  nats:
+    image: nats:latest
+    container_name: nats
+    ports:
+      - "4222:4222"    # NATS client port
+      - "8222:8222"    # HTTP monitoring port
+    command: ["-js", "-sd", "/data", "-m", "8222"]
+    volumes:
+      - nats-data:/data
+    networks:
+      - trading-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8222/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Prometheus
+  # Metrics collection and storage
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"    # Web UI and API
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/alert.rules.yml:/etc/prometheus/alert.rules.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - trading-net
+    restart: unless-stopped
+    depends_on:
+      - nats
+      - questdb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Grafana
+  # Visualization and dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"    # Web UI
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_LOG_LEVEL=info
+    networks:
+      - trading-net
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # QuestDB Initialization
+  # Creates initial database schema for market data
+  questdb-init:
+    image: appropriate/curl:latest
+    container_name: questdb-init
+    depends_on:
+      questdb:
+        condition: service_healthy
+    command: >
+      sh -c "
+        sleep 5 &&
+        curl -X POST http://questdb:9000/exec?query=CREATE\ TABLE\ IF\ NOT\ EXISTS\ market_tickers\ (timestamp\ TIMESTAMP,\ symbol\ SYMBOL,\ exchange\ SYMBOL,\ bid_price\ DOUBLE,\ bid_size\ DOUBLE,\ ask_price\ DOUBLE,\ ask_size\ DOUBLE,\ last_price\ DOUBLE,\ last_size\ DOUBLE,\ volume\ DOUBLE,\ vwap\ DOUBLE)\ TIMESTAMP(timestamp)\ PARTITION\ BY\ DAY &&
+        curl -X POST http://questdb:9000/exec?query=CREATE\ TABLE\ IF\ NOT\ EXISTS\ order_book_updates\ (timestamp\ TIMESTAMP,\ symbol\ SYMBOL,\ exchange\ SYMBOL,\ side\ SYMBOL,\ price\ DOUBLE,\ size\ DOUBLE,\ operation\ SYMBOL)\ TIMESTAMP(timestamp)\ PARTITION\ BY\ DAY &&
+        curl -X POST http://questdb:9000/exec?query=CREATE\ TABLE\ IF\ NOT\ EXISTS\ trades\ (timestamp\ TIMESTAMP,\ symbol\ SYMBOL,\ exchange\ SYMBOL,\ price\ DOUBLE,\ size\ DOUBLE,\ side\ SYMBOL,\ trade_id\ SYMBOL)\ TIMESTAMP(timestamp)\ PARTITION\ BY\ DAY &&
+        echo 'QuestDB schema initialized' &&
+        sleep infinity
+      "
+    networks:
+      - trading-net
+    restart: on-failure
+
+  # NATS Initialization
+  # Creates JetStream streams for risk events
+  nats-init:
+    image: natsio/nats-box:latest
+    container_name: nats-init
+    depends_on:
+      nats:
+        condition: service_healthy
+    command: >
+      sh -c "
+        sleep 5 &&
+        nats --server nats://nats:4222 stream add --name=market-data --subjects='market.data.*' --retention=limits --max-msgs=-1 --max-bytes=-1 --max-age=7d --storage=file &&
+        nats --server nats://nats:4222 stream add --name=execution-events --subjects='execution.*' --retention=limits --max-msgs=-1 --max-bytes=-1 --max-age=7d --storage=file &&
+        nats --server nats://nats:4222 stream add --name=risk-events --subjects='risk.*' --retention=limits --max-msgs=-1 --max-bytes=-1 --max-age=7d --storage=file &&
+        echo 'NATS JetStream streams initialized' &&
+        sleep infinity
+      "
+    networks:
+      - trading-net
+    restart: on-failure
+
+volumes:
+  # Persistent data volumes
+  aeron-data:
+    driver: local
+  questdb-data:
+    driver: local
+  nats-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  trading-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
