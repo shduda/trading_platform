@@ -1,2 +1,2 @@
-# matching_engine
-Exchange matching engine
+# trading_platform
+Trading platform
