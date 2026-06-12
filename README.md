@@ -1,33 +1,77 @@
-# Trading Platform
+# Trading Platform - HFT Learning Platform
 
-A high-performance, low-latency trading platform for crypto, stocks, and CFDs with real-time market data processing, signal generation, and order execution.
+🎓 **A hands-on learning project** to understand High-Frequency Trading technologies by building a realistic trading system simulation.
 
-## Overview
+## 🎯 Project Purpose
 
-This platform provides a comprehensive infrastructure for algorithmic trading with:
+This is a **research/educational project** designed to help you learn:
 
-- **Market Data Feed Handlers**: Connect to various exchanges (Binance, Kraken, etc.) and process L1/L2 data
-- **Aeron Messaging**: Low-latency UDP-based message bus for market data distribution
-- **Trading Algorithms**: Framework for implementing various trading strategies
-- **Execution Services**: Order management and execution across multiple exchanges
-- **Risk Service**: Real-time risk monitoring and enforcement
-- **QuestDB Storage**: Time-series database for market data persistence
-- **NATS + JetStream**: Event streaming for risk events and monitoring
-- **Prometheus + Grafana**: Comprehensive monitoring and alerting
+- ✅ **HFT Technologies**: Aeron, SBE (Simple Binary Encoding), UDP multicast
+- ✅ **Low-Latency Patterns**: Buffer management, GC optimization, object pooling
+- ✅ **Trading System Architecture**: Market data pipelines, strategy execution, order management
+- ✅ **Performance Engineering**: Microsecond-level latency measurement and optimization
+- ✅ **Distributed Systems**: Service communication, containerization, deployment
 
-## Architecture
+> **Not a production trading system** - This is a learning platform that simulates HFT patterns using real technologies.
 
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture diagrams and component descriptions.
+## 🏗️ Architecture Overview
 
-## Quick Start
+The platform uses **authentic HFT technologies** to create a realistic simulation:
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  Synthetic Feed  │────▶│    Aeron Pub    │────▶│  Strategies     │
+│ (Market Data)    │     │ (UDP Multicast)  │     │ (Market Making, │
+└─────────────────┘     └─────────────────┘     │   Stat Arb)     │
+                                                       │
+                    ┌──────────────────────────────┘
+                    │
+                    ▼
+            ┌─────────────────┐
+            │ Execution       │
+            │ Simulator       │
+            └────────┬────────┘
+                     │
+         ┌───────────┼───────────┐
+         │           │           │
+         ▼           ▼           ▼
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│  Prometheus  │ │   Grafana   │ │   QuestDB   │
+│ (Metrics)    │ │ (Dashboards)│ │ (Storage)    │
+└─────────────┘ └─────────────┘ └─────────────┘
+```
+
+### Core Technologies
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| Messaging | **Aeron + UDP Multicast** | Low-latency message bus |
+| Serialization | **SBE (Simple Binary Encoding)** | Binary message encoding |
+| Metrics | **Prometheus + Grafana** | Latency & throughput measurement |
+| Storage | **QuestDB** | Time-series market data |
+| Language | **C# (.NET 8)** | Primary implementation |
+| Containerization | **Docker** | Service packaging |
+
+## 📚 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | High-level design, component details, reference architecture |
+| [IMPLEMENTATION.md](docs/IMPLEMENTATION.md) | **Phased learning plan, detailed implementation steps** ⭐ |
+| [DEVELOPMENT.md](docs/DEVELOPMENT.md) | Coding standards, testing, debugging |
+
+> **📖 Start with [IMPLEMENTATION.md](docs/IMPLEMENTATION.md)** for the step-by-step learning-focused implementation plan.
+
+## 🚀 Quick Start (Learning Setup)
 
 ### Prerequisites
 
-- .NET 8+ SDK
-- Docker & Docker Compose
-- Git
+- **.NET 8+ SDK** - Core development
+- **Docker & Docker Compose** - Local infrastructure
+- **Git** - Version control
+- **Java 11+** - For SBE code generation (optional, can use pre-generated)
 
-### Setup
+### Local Development Setup
 
 1. **Clone the repository**:
    ```bash
@@ -35,21 +79,35 @@ See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture diagrams a
    cd trading_platform
    ```
 
-2. **Start infrastructure dependencies**:
+2. **Start minimal infrastructure** (for learning):
    ```bash
-   docker-compose up -d
+   # Start just Prometheus for metrics
+   docker-compose -f docker-compose.minimal.yml up -d
    ```
 
-3. **Access services**:
-   - Grafana: http://localhost:3000 (admin/admin)
+3. **Access monitoring**:
    - Prometheus: http://localhost:9090
-   - QuestDB Console: http://localhost:9000
-   - NATS Monitoring: http://localhost:8222
+   - Grafana: http://localhost:3000 (admin/admin)
 
 4. **Build the solution**:
    ```bash
    dotnet build TradingPlatform.sln
    ```
+
+### Full Infrastructure (Optional)
+
+For complete experience with all services:
+```bash
+# Start all infrastructure (Aeron, QuestDB, NATS, Prometheus, Grafana)
+docker-compose up -d
+
+# Access services:
+# - Aeron Media Driver: UDP port 40123
+# - QuestDB Console: http://localhost:9000
+# - NATS Monitoring: http://localhost:8222
+# - Prometheus: http://localhost:9090
+# - Grafana: http://localhost:3000 (admin/admin)
+```
 
 ## Documentation
 

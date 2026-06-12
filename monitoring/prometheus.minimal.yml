@@ -1,0 +1,31 @@
+global:
+  scrape_interval: 1s
+  evaluation_interval: 5s
+  scrape_timeout: 1s
+
+# Rule files (empty for minimal setup, can add alert.rules.yml later)
+rule_files:
+  # - '/etc/prometheus/alert.rules.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+
+  # Local development - Aeron media driver (if HTTP monitoring enabled)
+  - job_name: 'aeron'
+    static_configs:
+      - targets: ['aeron:8080']
+    scrape_interval: 5s
+    metrics_path: '/aeron/counters'
+
+  # Local services will be added dynamically
+  # Services expose /metrics endpoint on their configured ports
+  # Add entries like:
+  # - job_name: 'synthetic-feed'
+  #   static_configs:
+  #     - targets: ['host.docker.internal:8080']
+  #   scrape_interval: 1s

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Simplified SBE Schema for HFT Learning Platform - Phase 1
+    
+    This is a simplified version of market_data.xml designed for learning purposes.
+    It contains only the essential fields needed for Phase 1: Core Pipeline.
+    
+    Use this schema to:
+    1. Learn SBE schema design
+    2. Generate C# classes for Phase 1
+    3. Understand binary encoding principles
+    
+    Full schema (market_data.xml) can be used for later phases.
+-->
+
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd"
+    package="TradingPlatform.Sbe.Simplified"
+    id="1"
+    version="1"
+    semanticVersion="1.0.0"
+    description="Simplified Market Data Messages for HFT Learning Platform - Phase 1">
+
+    <sbe:types>
+        <!-- Simplified timestamp - nanoseconds since epoch -->
+        <sbe:type name="Timestamp" primitiveType="uint64" byteOrder="littleEndian" description="Nanoseconds since Unix epoch"/>
+        
+        <!-- Simplified data type enum -->
+        <sbe:enum name="DataType" description="Type of market data">
+            <sbe:validValue name="L1_TICKER" value="1" description="Level 1 ticker data"/>
+            <sbe:validValue name="L2_SNAPSHOT" value="2" description="Level 2 order book snapshot (simplified)"/>
+        </sbe:enum>
+    </sbe:types>
+
+    <sbe:messages>
+        <!-- Simplified Market Data Update - Phase 1 -->
+        <sbe:message name="MarketDataUpdate" id="1" description="Simplified Level 1 Market Data Update for learning">
+            <sbe:field name="timestamp" type="Timestamp" id="1" description="Event timestamp in nanoseconds"/>
+            <sbe:field name="symbol" type="char" length="8" id="2" description="Trading symbol (e.g., BTCUSDT, AAPL)"/>
+            <sbe:field name="dataType" type="DataType" id="3" description="Type of market data"/>
+            
+            <!-- L1 Fields - Best bid/ask -->
+            <sbe:field name="bidPrice" type="double" id="10" description="Best bid price"/>
+            <sbe:field name="bidSize" type="double" id="11" description="Best bid size/quantity"/>
+            <sbe:field name="askPrice" type="double" id="12" description="Best ask price"/>
+            <sbe:field name="askSize" type="double" id="13" description="Best ask size/quantity"/>
+            
+            <!-- Last trade -->
+            <sbe:field name="lastPrice" type="double" id="14" description="Last traded price"/>
+            <sbe:field name="lastSize" type="double" id="15" description="Last traded size/quantity"/>
+            
+            <!-- Volume -->
+            <sbe:field name="volume" type="double" id="16" description="24-hour volume"/>
+        </sbe:message>
+    </sbe:messages>
+</sbe:messageSchema>

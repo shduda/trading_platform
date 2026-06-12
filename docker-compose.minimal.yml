@@ -1,0 +1,100 @@
+version: '3.8'
+
+# Trading Platform - Minimal Setup for Learning
+# 
+# This minimal docker-compose file starts only the essential services
+# needed for local development and learning:
+# - Aeron Media Driver (UDP messaging)
+# - Prometheus (metrics collection)
+# - Grafana (visualization)
+#
+# Usage:
+#   docker-compose -f docker-compose.minimal.yml up -d
+#   docker-compose -f docker-compose.minimal.yml down
+#
+# For full infrastructure, use: docker-compose up -d
+
+services:
+  # Aeron Media Driver
+  # Low-latency UDP messaging for market data and orders
+  aeron:
+    image: adaptiveresearch/aeron:latest
+    container_name: aeron
+    ports:
+      - "40123:40123/udp"    # Default Aeron UDP port
+    command: ["-dir", "/aeron"]
+    volumes:
+      - aeron-data:/aeron
+    environment:
+      - AERON_DIR=/aeron
+    networks:
+      - trading-net
+    restart: unless-stopped
+
+  # Prometheus
+  # Metrics collection and storage
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"    # Web UI and API
+    volumes:
+      - ./monitoring/prometheus.minimal.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - trading-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Grafana
+  # Visualization and dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"    # Web UI
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_LOG_LEVEL=info
+    networks:
+      - trading-net
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  # Persistent data volumes
+  aeron-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  trading-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

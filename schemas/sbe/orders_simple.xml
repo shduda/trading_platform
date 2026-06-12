@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Simplified SBE Schema for Orders - Phase 2
+    
+    This is a simplified version of orders.xml designed for learning purposes.
+    It contains only the essential fields needed for Phase 2: Strategy Framework.
+    
+    Use this schema to:
+    1. Add order message types after Phase 1
+    2. Learn order lifecycle encoding
+    3. Understand trading message patterns
+    
+    Full schema (orders.xml) can be used for later phases.
+-->
+
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://fixprotocol.io/2016/sbe sbe.xsd"
+    package="TradingPlatform.Sbe.Simplified"
+    id="2"
+    version="1"
+    semanticVersion="1.0.0"
+    description="Simplified Order and Execution Messages for HFT Learning Platform - Phase 2">
+
+    <sbe:types>
+        <!-- Simplified timestamp -->
+        <sbe:type name="Timestamp" primitiveType="uint64" byteOrder="littleEndian" description="Nanoseconds since Unix epoch"/>
+        
+        <!-- Simplified enums -->
+        <sbe:enum name="OrderSide" description="Buy or Sell">
+            <sbe:validValue name="BUY" value="1"/>
+            <sbe:validValue name="SELL" value="2"/>
+        </sbe:enum>
+        
+        <sbe:enum name="OrderType" description="Type of order">
+            <sbe:validValue name="MARKET" value="1"/>
+            <sbe:validValue name="LIMIT" value="2"/>
+        </sbe:enum>
+        
+        <sbe:enum name="OrderStatus" description="Order status">
+            <sbe:validValue name="PENDING" value="1"/>
+            <sbe:validValue name="OPEN" value="2"/>
+            <sbe:validValue name="FILLED" value="3"/>
+            <sbe:validValue name="CANCELED" value="4"/>
+            <sbe:validValue name="REJECTED" value="5"/>
+        </sbe:enum>
+        
+        <sbe:enum name="ExecutionType" description="Type of execution">
+            <sbe:validValue name="NEW" value="0"/>
+            <sbe:validValue name="FILL" value="1"/>
+            <sbe:validValue name="PARTIAL_FILL" value="2"/>
+        </sbe:enum>
+    </sbe:types>
+
+    <sbe:messages>
+        <!-- Order Command - Submit new order -->
+        <sbe:message name="OrderCommand" id="100" description="Command to submit a new order">
+            <sbe:field name="orderId" type="char" length="16" id="1" description="Unique order ID (shortened for learning)"/>
+            <sbe:field name="symbol" type="char" length="8" id="2" description="Trading symbol"/>
+            <sbe:field name="side" type="OrderSide" id="3" description="Buy or Sell"/>
+            <sbe:field name="orderType" type="OrderType" id="4" description="Type of order"/>
+            <sbe:field name="price" type="double" id="5" description="Limit price (for limit orders)"/>
+            <sbe:field name="quantity" type="double" id="6" description="Order quantity"/>
+            <sbe:field name="timestamp" type="Timestamp" id="7" description="Order submission timestamp"/>
+        </sbe:message>
+        
+        <!-- Order Cancel Command -->
+        <sbe:message name="OrderCancelCommand" id="101" description="Command to cancel an order">
+            <sbe:field name="orderId" type="char" length="16" id="1" description="Order ID to cancel"/>
+            <sbe:field name="timestamp" type="Timestamp" id="2" description="Cancellation request timestamp"/>
+        </sbe:message>
+        
+        <!-- Execution Event -->
+        <sbe:message name="ExecutionEvent" id="200" description="Order execution event">
+            <sbe:field name="orderId" type="char" length="16" id="1" description="Order ID"/>
+            <sbe:field name="executionId" type="char" length="16" id="2" description="Unique execution ID"/>
+            <sbe:field name="executionType" type="ExecutionType" id="3" description="Type of execution"/>
+            <sbe:field name="filledQuantity" type="double" id="4" description="Quantity filled"/>
+            <sbe:field name="filledPrice" type="double" id="5" description="Price of this fill"/>
+            <sbe:field name="remainingQuantity" type="double" id="6" description="Remaining quantity"/>
+            <sbe:field name="timestamp" type="Timestamp" id="7" description="Execution timestamp"/>
+        </sbe:message>
+    </sbe:messages>
+</sbe:messageSchema>

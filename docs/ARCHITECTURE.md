@@ -1,16 +1,86 @@
 # Trading Platform Architecture & Development Plan
 
+> **🎓 NOTE**: This architecture serves dual purposes:
+> 1. **Learning Platform** (Primary): A research/educational project to understand HFT technologies by building a realistic simulation
+> 2. **Reference Architecture** (Secondary): A comprehensive design that could scale to production
+>
+> See [IMPLEMENTATION.md](./IMPLEMENTATION.md) for the **phased learning-focused implementation plan**.
+
 ## Table of Contents
-1. [Overview](#overview)
-2. [Architecture Diagram](#architecture-diagram)
-3. [Component Design](#component-design)
-4. [Technology Stack](#technology-stack)
-5. [Development Phases](#development-phases)
-6. [Infrastructure Setup](#infrastructure-setup)
-7. [Deployment Strategy](#deployment-strategy)
-8. [Monitoring & Observability](#monitoring--observability)
-9. [Project Structure](#project-structure)
-10. [Next Steps](#next-steps)
+1. [Project Context](#project-context)
+2. [Learning Objectives](#learning-objectives)
+3. [Overview](#overview)
+4. [Architecture Diagram](#architecture-diagram)
+5. [Component Design](#component-design)
+6. [Technology Stack](#technology-stack)
+7. [Development Phases](#development-phases)
+8. [Infrastructure Setup](#infrastructure-setup)
+9. [Deployment Strategy](#deployment-strategy)
+10. [Monitoring & Observability](#monitoring--observability)
+11. [Project Structure](#project-structure)
+12. [Next Steps](#next-steps)
+
+---
+
+## Project Context
+
+### Purpose & Scope
+
+**Primary Purpose**: HFT Learning Platform - A research/educational project to understand how professional trading systems are built using authentic high-frequency trading technologies.
+
+**Secondary Purpose**: Reference Architecture - A comprehensive design that could serve as a foundation for a production trading system.
+
+### Key Distinction
+
+| Aspect | Learning Platform | Production System |
+|--------|-------------------|------------------|
+| Scale | Simulated (1,000-20,000 msgs/sec) | Real (100,000+ msgs/sec) |
+| Deployment | Mostly local, minimal AWS | Full cloud/colo deployment |
+| Data Sources | Synthetic → Historical → Testnet | Real exchange connections |
+| Reliability | Best effort for learning | 99.99% uptime required |
+| Monitoring | Basic Prometheus + logging | Full observability stack |
+
+### Learning Focus
+
+This project is designed to teach:
+- ✅ **HFT Technologies**: Aeron, SBE, UDP multicast
+- ✅ **Low-Latency Patterns**: Buffer management, GC optimization, pooling
+- ✅ **Trading System Architecture**: Market data flow, order lifecycle, risk management
+- ✅ **Performance Engineering**: Latency measurement, profiling, optimization
+- ✅ **Distributed Systems**: Service communication, deployment
+
+---
+
+## Learning Objectives
+
+### Technology Mastery
+- [ ] Understand and use **Aeron** for low-latency UDP messaging
+- [ ] Design and implement **SBE schemas** for efficient serialization
+- [ ] Configure and tune **UDP multicast** for one-to-many communication
+- [ ] Integrate **Prometheus** for metrics collection
+- [ ] Use **QuestDB** for time-series data storage
+- [ ] Containerize services with **Docker**
+
+### Performance Skills
+- [ ] Measure **per-component latency** (microsecond precision)
+- [ ] Measure **end-to-end tick-to-trade latency**
+- [ ] Profile and optimize **critical paths**
+- [ ] Tune **Aeron configuration** for throughput vs latency
+- [ ] Manage **memory and GC** for high-throughput systems
+- [ ] Implement **object pooling** to reduce allocations
+
+### Architecture Skills
+- [ ] Design **modular trading system** components
+- [ ] Implement **market data pipelines**
+- [ ] Create **strategy execution frameworks**
+- [ ] Build **order management** systems
+- [ ] Integrate **risk controls**
+
+### Operational Skills
+- [ ] Deploy **multi-service applications**
+- [ ] Monitor **system health** and performance
+- [ ] Manage **infrastructure costs**
+- [ ] Troubleshoot **latency issues**
 
 ---
 
@@ -19,12 +89,29 @@
 ### Purpose
 Build a high-performance, low-latency trading platform capable of handling multiple financial instruments (crypto, stocks, CFDs) with real-time market data processing, signal generation, and order execution.
 
+**For Learning Platform**: Start with simplified components, synthetic data, and progressive complexity addition.
+
+**For Production**: Full implementation with all components, real data feeds, and comprehensive monitoring.
+
 ### Key Requirements
 - **Performance**: Sub-millisecond latency for market data processing and order execution
 - **Reliability**: 99.99% uptime with fault tolerance and automatic recovery
 - **Scalability**: Horizontal scaling for feed handlers and trading algorithms
 - **Observability**: Comprehensive monitoring of all components and latencies
 - **Maintainability**: Clean architecture with clear separation of concerns
+
+### Learning Adaptations
+
+For the **HFT Learning Platform**, we adapt the architecture:
+
+1. **Start Simplified**: Begin with core pipeline (Synthetic Feed → Aeron → Subscriber)
+2. **Add Gradually**: Introduce strategies, execution, storage in phases
+3. **Measure Everything**: Latency tracking from Phase 1
+4. **Simulate Scale**: Generate synthetic load to test performance
+5. **Local-First**: Most development happens on local machine
+6. **Cost-Conscious**: Minimal AWS usage for deployment testing only
+
+> **📖 See [IMPLEMENTATION.md](./IMPLEMENTATION.md) for detailed phased implementation plan**
 
 ---
 
